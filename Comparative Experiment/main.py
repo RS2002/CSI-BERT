@@ -53,7 +53,7 @@ def main():
     print('total parameters:', total_params)
     optim = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=0.01)
     dataset=load_data(args.data_path)
-    train_data,test_data=train_test_split(dataset, test_size=0.1)
+    train_data,test_data=train_test_split(dataset, test_size=0.1, random_state=42)
     train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
     test_loader = DataLoader(test_data, batch_size=args.batch_size, shuffle=False)
     loss_func = nn.CrossEntropyLoss()
