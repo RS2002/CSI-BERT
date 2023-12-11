@@ -17,6 +17,7 @@ def get_args():
     parser.add_argument('--hs', type=int, default=64)
     parser.add_argument('--layers', type=int, default=4)
     parser.add_argument('--max_len', type=int, default=100) # max input length
+    parser.add_argument('--intermediate_size', type=int, default=128)
     parser.add_argument('--heads', type=int, default=4)
     parser.add_argument('--position_embedding_type', type=str, default="absolute")
     parser.add_argument('--time_embedding', action="store_true", default=False) # whether to use time embedding
@@ -32,9 +33,7 @@ def main():
     args = get_args()
     device_name = "cuda:" + args.cuda
     device = torch.device(device_name if torch.cuda.is_available() and not args.cpu else 'cpu')
-    bertconfig = BertConfig(max_position_embeddings=args.max_len, hidden_size=args.hs,
-                            position_embedding_type=args.position_embedding_type, num_hidden_layers=args.layers,
-                            num_attention_heads=args.heads)
+    bertconfig=BertConfig(max_position_embeddings=args.max_len, hidden_size=args.hs, position_embedding_type=args.position_embedding_type,num_hidden_layers=args.layers,num_attention_heads=args.heads, intermediate_size=args.intermediate_size)
     csibert = CSIBERT(bertconfig, args.carrier_dim, args.carrier_attn, args.time_embedding)
     csi_dim=args.carrier_dim
     model=Token_Classifier(csibert,csi_dim)

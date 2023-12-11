@@ -21,6 +21,7 @@ def get_args():
     parser.add_argument('--hs', type=int, default=64)
     parser.add_argument('--layers', type=int, default=4)
     parser.add_argument('--max_len', type=int, default=100) # max input length
+    parser.add_argument('--intermediate_size', type=int, default=128)
     parser.add_argument('--heads', type=int, default=4)
     parser.add_argument('--position_embedding_type', type=str, default="absolute")
     parser.add_argument('--time_embedding', action="store_true", default=False) # whether to use time embedding
@@ -45,7 +46,7 @@ def main():
     args=get_args()
     device_name = "cuda:"+args.cuda
     device = torch.device(device_name if torch.cuda.is_available() and not args.cpu else 'cpu')
-    bertconfig=BertConfig(max_position_embeddings=args.max_len, hidden_size=args.hs, position_embedding_type=args.position_embedding_type,num_hidden_layers=args.layers,num_attention_heads=args.heads)
+    bertconfig=BertConfig(max_position_embeddings=args.max_len, hidden_size=args.hs, position_embedding_type=args.position_embedding_type,num_hidden_layers=args.layers,num_attention_heads=args.heads, intermediate_size=args.intermediate_size)
     csibert=CSIBERT(bertconfig,args.carrier_dim,args.carrier_attn,args.time_embedding)
     csi_dim=args.carrier_dim
     model=Token_Classifier(csibert,args.carrier_dim)
@@ -68,6 +69,7 @@ def main():
         model.train()
         torch.set_grad_enabled(True)
         loss_list=[]
+        mse_list=[]
         err_list=[]
         pbar = tqdm.tqdm(train_loader, disable=False)
         for x,_,_,_,timestamp in pbar:
@@ -171,8 +173,9 @@ def main():
             x[x==0]=1
             error = torch.sum(torch.abs(y - x) / x * loss_mask) / torch.sum(loss_mask)
             loss_list.append(loss.item())
+            mse_list.append(loss1.item())
             err_list.append(error.item())
-        log="Epoch {} | Train Loss {:06f}, Train Error {:06f}, ".format(j+1,np.mean(loss_list),np.mean(err_list))
+        log = "Epoch {} | Train Loss {:06f}, Train Error {:06f}, Train MSE {:06f}, ".format(j + 1, np.mean(loss_list),np.mean(err_list),np.mean(mse_list))
         print(log)
         with open("Pretrain.txt", 'a') as file:
             file.write(log)
@@ -180,6 +183,7 @@ def main():
         model.eval()
         torch.set_grad_enabled(False)
         loss_list=[]
+        mse_list=[]
         err_list=[]
         pbar = tqdm.tqdm(valid_loader, disable=False)
         for x,_,_,_,timestamp in pbar:
@@ -266,11 +270,12 @@ def main():
             x[x==0]=1
             error = torch.sum(torch.abs(y - x) / x * loss_mask) / torch.sum(loss_mask)
             loss_list.append(loss.item())
+            mse_list.append(loss1.item())
             err_list.append(error.item())
-        log="Test Loss {:06f}, Test Error {:06f} ".format(np.mean(loss_list),np.mean(err_list))
+        log = "Test Loss {:06f}, Test Error {:06f}, Test MSE {:06f} ".format(np.mean(loss_list), np.mean(err_list), np.mean(mse_list))
         print(log)
         with open("Pretrain.txt", 'a') as file:
-            file.write(log+"\n")
+            file.write(log + "\n")
 
         torch.save(csibert.state_dict(), "csibert_pretrain.pth")
         torch.save(model.state_dict(), "pretrain.pth")
