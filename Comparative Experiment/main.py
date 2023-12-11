@@ -33,7 +33,6 @@ def main():
     max_len=args.max_len
     carrier_dim=args.carrier_dim
     class_num=args.class_num
-    task=args.task
     if model_name=="FFN":
         model=FFN(input_dim=max_len*carrier_dim,class_num=class_num)
     elif model_name=="CNN":
@@ -53,6 +52,7 @@ def main():
     print('total parameters:', total_params)
     optim = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=0.01)
     train_data,test_data=load_data(args.data_path,train_prop=0.9)
+    # dataset=load_data(args.data_path)
     # train_data,test_data=train_test_split(dataset, test_size=0.1, random_state=42)
     train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
     test_loader = DataLoader(test_data, batch_size=args.batch_size, shuffle=False)
@@ -66,6 +66,7 @@ def main():
         acc_list=[]
         pbar = tqdm.tqdm(train_loader, disable=False)
         for x,_,action,people,_ in pbar:
+            # x[x==-1000]=0
             x=x.to(device)
             if args.task=="action":
                 label=action.to(device)
@@ -86,10 +87,10 @@ def main():
 
             loss_list.append(loss.item())
             acc_list.append(acc.item())
-            log = "Epoch {} | Train Loss {:06f}, Train Acc {:06f}, ".format(j + 1, np.mean(loss_list),np.mean(acc_list))
-            print(log)
-            with open(model_name+".txt", 'a') as file:
-                file.write(log)
+        log = "Epoch {} | Train Loss {:06f}, Train Acc {:06f}, ".format(j + 1, np.mean(loss_list),np.mean(acc_list))
+        print(log)
+        with open(model_name+"_"+args.task+".txt", 'a') as file:
+            file.write(log)
 
         model.eval()
         torch.set_grad_enabled(False)
@@ -97,6 +98,7 @@ def main():
         acc_list=[]
         pbar = tqdm.tqdm(test_loader, disable=False)
         for x,_,action,people,_ in pbar:
+            # x[x==-1000]=0
             x=x.to(device)
             if args.task=="action":
                 label=action.to(device)
@@ -114,11 +116,11 @@ def main():
             acc_list.append(acc.item())
         log = "Test Loss {:06f}, Test Acc {:06f}, ".format(np.mean(loss_list), np.mean(acc_list))
         print(log)
-        with open(model_name+".txt", 'a') as file:
+        with open(model_name+"_"+args.task+".txt", 'a') as file:
             file.write(log + "\n")
         if best_acc is None or np.mean(acc_list) > best_acc:
             best_acc = np.mean(acc_list)
-            torch.save(model.state_dict(), model_name+".pth")
+            torch.save(model.state_dict(), model_name+"_"+args.task+".pth")
 
 
 if __name__ == '__main__':

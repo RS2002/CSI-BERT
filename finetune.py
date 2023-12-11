@@ -3,7 +3,7 @@ from transformers import BertConfig
 import argparse
 import tqdm
 import torch
-from dataset import load_all,load_zero_people
+from dataset import load_all,load_data
 from torch.utils.data import DataLoader
 import torch.nn as nn
 import copy
@@ -53,8 +53,9 @@ def main():
     total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print('total parameters:', total_params)
     optim = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=0.01)
-    dataset=load_all()
-    train_data,test_data=train_test_split(dataset, test_size=0.1, random_state=42)
+    # dataset=load_all()
+    # train_data,test_data=train_test_split(dataset, test_size=0.1, random_state=42)
+    train_data,test_data=load_data(train_prop=0.9)
     train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
     test_loader = DataLoader(test_data, batch_size=args.batch_size, shuffle=False)
     loss_func = nn.CrossEntropyLoss()
@@ -113,7 +114,7 @@ def main():
             acc_list.append(acc.item())
         log="Epoch {} | Train Loss {:06f}, Train Acc {:06f}, ".format(j+1,np.mean(loss_list),np.mean(acc_list))
         print(log)
-        with open("Finetune.txt", 'a') as file:
+        with open(args.task+".txt", 'a') as file:
             file.write(log)
 
         model.eval()
@@ -161,13 +162,13 @@ def main():
 
             loss_list.append(loss.item())
             acc_list.append(acc.item())
-        log="Test Loss {:06f}, Test Acc {:06f}, ".format(np.mean(loss_list),np.mean(acc_list))
+        log="Test Loss {:06f}, Test Acc {:06f}".format(np.mean(loss_list),np.mean(acc_list))
         print(log)
-        with open("Finetune.txt", 'a') as file:
+        with open(args.task+".txt", 'a') as file:
             file.write(log+"\n")
         if best_loss is None or np.mean(loss_list)<best_loss:
             best_loss=np.mean(loss_list)
-            torch.save(model.state_dict(), "finetune.pth")
+            torch.save(model.state_dict(), args.task+".pth")
 
 if __name__ == '__main__':
     main()
