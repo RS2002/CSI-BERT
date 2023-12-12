@@ -59,7 +59,7 @@ python pretrain_adversarial.py --normal --position_embedding_type None
 
 
 
-###2.2 Recover & Finetune
+### 2.2 Recover & Finetune
 
 During the recovery phase, you need to maintain the same settings as in the pretraining phase.
 
@@ -69,7 +69,7 @@ python recover.py --normal --time_embedding --path <full pretrain model path>
 
 
 
-###2.3 Finetune
+### 2.3 Finetune
 
 During the finetuning phase, you need to maintain the same settings as in the pretraining phase.
 
