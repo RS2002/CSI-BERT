@@ -37,11 +37,18 @@ class CSI_dataset(Dataset):
 
 
 def load_data(magnitude_path="../data/magnitude.npy",train_prop=None):
-    magnitude=np.load(magnitude_path).astype(np.float32)
-    phase=np.load("../data/phase.npy").astype(np.float32)
-    timestamp=np.load("../data/timestamp.npy").astype(np.float32)
-    people=np.load("../data/people.npy").astype(np.int64)
-    action=np.load("../data/action.npy").astype(np.int64)
+    if magnitude_path=="../squeeze_data/magnitude.npy":
+        magnitude=np.load("../squeeze_data/magnitude.npy").astype(np.float32)
+        phase=np.load("../squeeze_data/phase.npy").astype(np.float32)
+        timestamp=np.load("../squeeze_data/timestamp.npy").astype(np.float32)
+        people=np.load("../squeeze_data/people.npy").astype(np.int64)
+        action=np.load("../squeeze_data/action.npy").astype(np.int64)
+    else:
+        magnitude=np.load(magnitude_path).astype(np.float32)
+        phase=np.load("../data/phase.npy").astype(np.float32)
+        timestamp=np.load("../data/timestamp.npy").astype(np.float32)
+        people=np.load("../data/people.npy").astype(np.int64)
+        action=np.load("../data/action.npy").astype(np.int64)
     if train_prop is None:
         return CSI_dataset(magnitude, phase, timestamp, action, people)
     else:

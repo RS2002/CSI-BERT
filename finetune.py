@@ -28,6 +28,7 @@ def get_args():
     parser.add_argument("--cuda", type=str, default='0')
     parser.add_argument("--carrier_dim", type=int, default=52)
     parser.add_argument("--carrier_attn", action="store_true",default=False)
+    parser.add_argument("--freeze", action="store_true",default=False)
     parser.add_argument('--lr', type=float, default=0.0005)
     # parser.add_argument("--test_people", type=int, nargs='+', default=[0,1])
     parser.add_argument('--epoch', type=int, default=50)
@@ -64,6 +65,11 @@ def main():
     for j in range(args.epoch):
         model.train()
         torch.set_grad_enabled(True)
+        if args.freeze:
+            csibert.eval()
+            for param in csibert.parameters():
+                if param.requires_grad:
+                    param.requires_grad = False
         loss_list=[]
         acc_list=[]
         pbar = tqdm.tqdm(train_loader, disable=False)
