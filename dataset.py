@@ -42,9 +42,10 @@ def load_zero_people(test_people_list):
     b=b.astype(bool)
     return CSI_dataset(magnitude[a], phase[a], timestamp[a], action[a], people[a]),CSI_dataset(magnitude[b], phase[b], timestamp[a], action[b], people[b])
 
-def load_all():
-    magnitude=np.load("./data/magnitude.npy").astype(np.float32)
-    phase=np.load("./data/phase.npy").astype(np.float32)
+def load_all(magnitude_path="./data/magnitude.npy",phase_path="./data/magnitude.npy"):
+    magnitude=np.load(magnitude_path).astype(np.float32)
+    phase=np.load(phase_path).astype(np.float32)
+    phase[np.isnan(phase)] = -1000
     timestamp=np.load("./data/timestamp.npy").astype(np.float32)
     people=np.load("./data/people.npy").astype(np.int64)
     action=np.load("./data/action.npy").astype(np.int64)

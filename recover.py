@@ -49,14 +49,14 @@ def main():
     for x, _, _, _, timestamp in pbar:
         x = x.to(device)
         timestamp = timestamp.to(device)
-        attn_mask = (x[:, :, 0] != pad[0]).float().to(device)  # (batch, seq_len)
+        attn_mask = (x[:, :, 0] != pad[0]).float().to(device)
         input = copy.deepcopy(x)
         batch_size, seq_len, carrier_num = input.shape
         max_values, _ = torch.max(input, dim=-2, keepdim=True)
         input[input == pad[0]] = -pad[0]
         min_values, _ = torch.min(input, dim=-2, keepdim=True)
         input[input == -pad[0]] = pad[0]
-        if args.normal:  # 在时间维度归一化
+        if args.normal:
             non_pad = (input != pad[0]).float()
             avg = copy.deepcopy(input)
             avg[input == pad[0]] = 0
@@ -68,11 +68,11 @@ def main():
             input = (input - avg) / std
 
         if args.normal:
-            rand_word = torch.tensor(csibert.mask(batch_size, std=std, avg=avg)).to(device)
+            rand_word = torch.tensor(csibert.mask(batch_size, std=torch.tensor([1]).to(device), avg=torch.tensor([0]).to(device))).to(device)
         else:
             rand_word = torch.tensor(csibert.mask(batch_size, min=min_values, max=max_values)).to(device)
-        x[x==pad[0]]=rand_word[x==pad[0]]
-        if args.position_embedding_type == "absolute":
+        input[x==pad[0]]=rand_word[x==pad[0]]
+        if args.time_embedding:
             y = model(input, None)
         else:
             y = model(input, None, timestamp)

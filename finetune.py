@@ -45,7 +45,6 @@ def main():
     bertconfig=BertConfig(max_position_embeddings=args.max_len, hidden_size=args.hs, position_embedding_type=args.position_embedding_type,num_hidden_layers=args.layers,num_attention_heads=args.heads, intermediate_size=args.intermediate_size)
     csibert=CSIBERT(bertconfig,args.carrier_dim,args.carrier_attn, args.time_embedding)
     csibert.load_state_dict(torch.load(args.path))
-    csi_dim=args.carrier_dim
     # model=Sequence_Classifier(csibert,args.class_num)
     model = Classification(csibert, args.class_num)
     model=model.to(device)
@@ -101,8 +100,13 @@ def main():
                 input = (input - avg) / std
 
             batch_size,seq_len,carrier_num=input.shape
-            attn_mask = (x[:, :, 0] != pad[0]).float().to(device)  # (batch, seq_len)
-            if args.position_embedding_type=="absolute":
+            attn_mask = (x[:, :, 0] != pad[0]).float().to(device)
+            if args.normal:
+                rand_word = torch.tensor(csibert.mask(batch_size, std=torch.tensor([1]).to(device), avg=torch.tensor([0]).to(device))).to(device)
+            else:
+                rand_word = torch.tensor(csibert.mask(batch_size, min=min_values, max=max_values)).to(device)
+            input[x==pad[0]]=rand_word[x==pad[0]]
+            if args.time_embedding:
                 y = model(input, attn_mask)
             else:
                 y = model(input, attn_mask, timestamp)
@@ -113,7 +117,7 @@ def main():
 
             model.zero_grad()
             loss.backward()
-            # nn.utils.clip_grad_norm_(model.parameters(), 3.0)  # 用于裁剪梯度，防止梯度爆炸
+            nn.utils.clip_grad_norm_(model.parameters(), 3.0)  # 用于裁剪梯度，防止梯度爆炸
             optim.step()
 
             loss_list.append(loss.item())
@@ -144,7 +148,7 @@ def main():
             min_values, _ = torch.min(input, dim=-2, keepdim=True)
             input[input == -pad[0]] = pad[0]
 
-            if args.normal: # 在时间维度归一化
+            if args.normal:
                 non_pad = (input != pad[0]).float()
                 avg = copy.deepcopy(input)
                 avg[input == pad[0]] = 0
@@ -156,8 +160,13 @@ def main():
                 input = (input - avg) / std
 
             batch_size,seq_len,carrier_num=input.shape
-            attn_mask = (x[:, :, 0] != pad[0]).float().to(device)  # (batch, seq_len)
-            if args.position_embedding_type=="absolute":
+            attn_mask = (x[:, :, 0] != pad[0]).float().to(device)
+            if args.normal:
+                rand_word = torch.tensor(csibert.mask(batch_size, std=torch.tensor([1]).to(device), avg=torch.tensor([0]).to(device))).to(device)
+            else:
+                rand_word = torch.tensor(csibert.mask(batch_size, min=min_values, max=max_values)).to(device)
+            input[x==pad[0]]=rand_word[x==pad[0]]
+            if args.time_embedding:
                 y = model(input, attn_mask)
             else:
                 y = model(input, attn_mask, timestamp)

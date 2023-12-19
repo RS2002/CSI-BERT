@@ -19,8 +19,8 @@ TODO
 
 The data structure is as follows:
 
-Amplitude, Phase: batch_size * length * (receiver_num * carrier_dim)
-TimeStamp: batch_size * length
+Amplitude, Phase: batch_size , length , (receiver_num * carrier_dim)
+TimeStamp: batch_size ,length
 Label: batch_size
 
 In our current code version, we do not utilize the phase information as it has been observed to negatively impact the performance of downstream tasks. However, it is worth noting that our model has the capability to successfully recover the lost phase data. If you wish to utilize the phase information, you can concatenate it in the last dimension to the amplitude data.
@@ -38,15 +38,13 @@ You can refer to our code to see the parameters that can be easily modified thro
 ### 2.1 Pretrain
 
 ```bash
-python pretrain_adversarial.py --normal --time_embedding
+python pretrain.py --normal --time_embedding --adversarial
 ```
-
-If you do not wish to use adversarial learning, you can run `pretrain.py` in the same manner.
 
 As mentioned in the previous section, if you want to disable the time embedding, you can run the model using the following command:
 
 ```bash
-python pretrain_adversarial.py --normal
+python pretrain.py --normal
 ```
 
 However, in this case, you may need to make some changes to the data loader. Regardless of the timestamp in your data, it will be ignored by the model.
@@ -54,7 +52,7 @@ However, in this case, you may need to make some changes to the data loader. Reg
 If you want to disable the position embedding, you can use the following command:
 
 ```bash
-python pretrain_adversarial.py --normal --position_embedding_type None
+python pretrain.py --normal --position_embedding_type None
 ```
 
 

@@ -62,12 +62,16 @@ class CSIBERT(nn.Module):
             # x=x.reshape(batch_size*length,-1)
             # x=self.norm2(x)
             # x=x.reshape(batch_size,length,-1)
+        # print(torch.max(x))
+        # print(torch.min(x))
         x=self.emb(x)
         if timestamp is not None:
             pos_emb=self.positional_embedding(timestamp)
             x=x+pos_emb
         y=self.bert(inputs_embeds=x,attention_mask=attn_mask, output_hidden_states=True)
         y=y.hidden_states[-1]
+        # print(torch.max(y))
+        # print(torch.min(y))
         return y
 
     def mask(self,batch_size=1,min=None,max=None,std=None,avg=None):
@@ -150,10 +154,10 @@ class Sequence_Classifier(nn.Module):
         self.GRL = GRL()
 
 
-    def forward(self,x,attn_mask=None,timestamp=None,adversarial=False):
+    def forward(self,x,attn_mask=None,timestamp=None,adversarial=False,alpha=1):
         x=self.bert(x,attn_mask,timestamp)
         if adversarial:
-            x = self.GRL.apply(x)
+            x = self.GRL.apply(x,alpha)
         batch_size,length,hidden_dim=x.shape
         x_attn, _ = self.self_attention(self.query(x), self.key(x), self.value(x))
         x = x + x_attn
@@ -204,6 +208,7 @@ class Classification(nn.Module):
 if __name__ == '__main__':
     configuration = BertConfig(max_position_embeddings=100, hidden_size=64, num_hidden_layers=4,num_attention_heads=4)
     model=CSIBERT(configuration,52,True,True)
+    print(model.mask(2))
     #print(model)
     x=torch.randn([2,100,52])
     t=torch.randn([2,100])
