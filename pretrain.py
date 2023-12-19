@@ -252,14 +252,14 @@ def main():
             non_pad = (input != pad[0]).float()
             avg = copy.deepcopy(input)
             avg[input == pad[0]] = 0
-            avg = torch.sum(avg, dim=-2, keepdim=True) / (torch.sum(non_pad, dim=-2, keepdim=True)+1e-8)
+            avg = torch.sum(avg, dim=-2, keepdim=True) / (torch.sum(non_pad, dim=-2, keepdim=True)+1e-5)
             std = (input - avg) ** 2
             std[input == pad[0]] = 0
-            std = torch.sum(std, dim=-2, keepdim=True) / (torch.sum(non_pad, dim=-2, keepdim=True)+1e-8)
+            std = torch.sum(std, dim=-2, keepdim=True) / (torch.sum(non_pad, dim=-2, keepdim=True)+1e-5)
             std = torch.sqrt(std)
 
             if args.normal:
-                input = (input - avg) / (std+1e-8)
+                input = (input - avg) / (std+1e-5)
 
             batch_size,seq_len,carrier_num=input.shape
             loss_mask = torch.zeros(batch_size, seq_len)
@@ -295,7 +295,7 @@ def main():
             avg_hat = torch.mean(y, dim=-2, keepdim=True)
             std_hat = torch.sqrt(torch.mean((y - avg_hat)** 2, dim=-2, keepdim=True))
             if args.normal:
-                y_standard = (y - avg_hat) / (std_hat + 1e-8)
+                y_standard = (y - avg_hat) / (std_hat + 1e-5)
             else:
                 y_standard=y
 
@@ -343,12 +343,12 @@ def main():
             mask = loss_mask.unsqueeze(2).repeat(1, 1, csi_dim)
             x_mask = x * mask
             y_mask = y * mask
-            x_mask_mean = torch.sum(x_mask, dim=1, keepdim=True) / (torch.sum(mask, dim=1, keepdim=True) + 1e-3)
-            y_mask_mean = torch.sum(y_mask, dim=1, keepdim=True) / (torch.sum(mask, dim=1, keepdim=True) + 1e-3)
+            x_mask_mean = torch.sum(x_mask, dim=1, keepdim=True) / (torch.sum(mask, dim=1, keepdim=True) + 1e-5)
+            y_mask_mean = torch.sum(y_mask, dim=1, keepdim=True) / (torch.sum(mask, dim=1, keepdim=True) + 1e-5)
             x_mask_std = torch.sqrt(
-                torch.sum(((x_mask_mean - x_mask) * mask) ** 2, dim=1) / (torch.sum(mask, dim=1) + 1e-3))
+                torch.sum(((x_mask_mean - x_mask) * mask) ** 2, dim=1) / (torch.sum(mask, dim=1) + 1e-5))
             y_mask_std = torch.sqrt(
-                torch.sum(((y_mask_mean - y_mask) * mask) ** 2, dim=1) / (torch.sum(mask, dim=1) + 1e-3))
+                torch.sum(((y_mask_mean - y_mask) * mask) ** 2, dim=1) / (torch.sum(mask, dim=1) + 1e-5))
             loss5 = torch.mean(loss_smooth(x_mask_mean, y_mask_mean))
             loss6 = torch.mean(loss_smooth(x_mask_std, y_mask_std))
             loss += loss5 + loss6
@@ -391,7 +391,7 @@ def main():
             loss_epoch+=1
         if mape_epoch>=args.epoch and mse_epoch>args.epoch and loss_epoch>args.epoch:
             break
-        print("MAPE Epoch {:}, MSE Epoch {:}, Loss Epcoh{:}".format(mape_epoch,mse_epoch,loss_epoch))
+        print("MAPE Epoch {:}, MSE Epoch {:}, Loss Epcoh {:}".format(mape_epoch,mse_epoch,loss_epoch))
 
 
 if __name__ == '__main__':

@@ -79,3 +79,13 @@ As mentioned earlier, if you want to use CSI-BERT for your own tasks, you will n
 
 
 
+# 3 Bug
+
+We have identified a minor bug in the pre-training process. It appears that the issue may be caused by the denominator in the loss function being too small. To address this problem, we have introduced a small adjustment factor to the denominator, which reduces its occurrence. Additionally, we have discovered that using alternative loss functions can mitigate the problem. It is possible that during reverse propagation, the denominator sometimes becomes very close to zero.
+
+If you encounter the same issue during your testing, we suggest trying the following solutions:
+
+1. Rerun the process (as the bug does not occur consistently).
+2. Experiment with the aforementioned methods.
+
+We would greatly appreciate it if you could share your own approach for resolving the bug with us. Your contributions are welcome and valuable to us.

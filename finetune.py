@@ -31,7 +31,7 @@ def get_args():
     parser.add_argument("--freeze", action="store_true",default=False)
     parser.add_argument('--lr', type=float, default=0.0005)
     # parser.add_argument("--test_people", type=int, nargs='+', default=[0,1])
-    parser.add_argument('--epoch', type=int, default=50)
+    parser.add_argument('--epoch', type=int, default=30)
     parser.add_argument('--class_num', type=int, default=6) #action:6, people:8
     parser.add_argument('--task', type=str, default="action") # "action" or "people"
     parser.add_argument("--path", type=str, default='./csibert_pretrain.pth')
@@ -59,9 +59,12 @@ def main():
     train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
     test_loader = DataLoader(test_data, batch_size=args.batch_size, shuffle=False)
     loss_func = nn.CrossEntropyLoss()
-    best_loss=None
+    best_acc=0
+    best_epoch=0
 
-    for j in range(args.epoch):
+    j=0
+    while True:
+        j+=1
         model.train()
         torch.set_grad_enabled(True)
         if args.freeze:
@@ -88,7 +91,7 @@ def main():
             min_values, _ = torch.min(input, dim=-2, keepdim=True)
             input[input == -pad[0]] = pad[0]
 
-            if args.normal: # 在时间维度归一化
+            if args.normal:
                 non_pad = (input != pad[0]).float()
                 avg = copy.deepcopy(input)
                 avg[input == pad[0]] = 0
@@ -97,7 +100,7 @@ def main():
                 std[input == pad[0]] = 0
                 std = torch.sum(std, dim=-2, keepdim=True) / torch.sum(non_pad, dim=-2, keepdim=True)
                 std = torch.sqrt(std)
-                input = (input - avg) / std
+                input = (input - avg) / (std+1e-5)
 
             batch_size,seq_len,carrier_num=input.shape
             attn_mask = (x[:, :, 0] != pad[0]).float().to(device)
@@ -122,7 +125,7 @@ def main():
 
             loss_list.append(loss.item())
             acc_list.append(acc.item())
-        log="Epoch {} | Train Loss {:06f}, Train Acc {:06f}, ".format(j+1,np.mean(loss_list),np.mean(acc_list))
+        log="Epoch {} | Train Loss {:06f}, Train Acc {:06f}, ".format(j,np.mean(loss_list),np.mean(acc_list))
         print(log)
         with open(args.task+".txt", 'a') as file:
             file.write(log)
@@ -157,7 +160,7 @@ def main():
                 std[input == pad[0]] = 0
                 std = torch.sum(std, dim=-2, keepdim=True) / torch.sum(non_pad, dim=-2, keepdim=True)
                 std = torch.sqrt(std)
-                input = (input - avg) / std
+                input = (input - avg) / (std+1e-5)
 
             batch_size,seq_len,carrier_num=input.shape
             attn_mask = (x[:, :, 0] != pad[0]).float().to(device)
@@ -181,9 +184,14 @@ def main():
         print(log)
         with open(args.task+".txt", 'a') as file:
             file.write(log+"\n")
-        if best_loss is None or np.mean(loss_list)<best_loss:
-            best_loss=np.mean(loss_list)
+        if np.mean(acc_list)>=best_acc:
+            best_acc=np.mean(acc_list)
             torch.save(model.state_dict(), args.task+".pth")
+            best_epoch=0
+        else:
+            best_epoch+=1
+        if best_epoch>=args.epoch:
+            break
 
 if __name__ == '__main__':
     main()
