@@ -38,7 +38,7 @@ You can refer to our code to see the parameters that can be easily modified thro
 ### 2.1 Pretrain
 
 ```bash
-python pretrain.py --normal --time_embedding --adversarial
+python pretrain.py --normal --time_embedding --adversarial --random_mask_percent
 ```
 
 As mentioned in the previous section, if you want to disable the time embedding, you can run the model using the following command:
@@ -53,6 +53,12 @@ If you want to disable the position embedding, you can use the following command
 
 ```bash
 python pretrain.py --normal --position_embedding_type None
+```
+
+If you want to set a fixed mask proportion, you can use:
+
+```bash
+python pretrain.py --normal  --time_embedding --adversarial --mask_percent <your mask proportion>
 ```
 
 
@@ -89,3 +95,5 @@ If you encounter the same issue during your testing, we suggest trying the follo
 2. Experiment with the aforementioned methods.
 
 We would greatly appreciate it if you could share your own approach for resolving the bug with us. Your contributions are welcome and valuable to us.
+
+(Now we found that this problem occurs when the mask percentage is small.)

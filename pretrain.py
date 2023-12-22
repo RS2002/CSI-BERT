@@ -3,7 +3,7 @@ from transformers import BertConfig,AdamW
 import argparse
 import tqdm
 import torch
-from dataset import load_zero_people,load_all
+from dataset import load_zero_people,load_all,load_data
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
 import torch.nn as nn
@@ -18,6 +18,7 @@ def get_args():
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--mask_percent', type=float, default=0.15)
+    parser.add_argument('--random_mask_percent', action="store_true",default=False)
     parser.add_argument('--normal', action="store_true", default=False) # whether to use norm layer
     parser.add_argument('--hs', type=int, default=64)
     parser.add_argument('--layers', type=int, default=4)
@@ -38,9 +39,6 @@ def get_args():
     return args
 
 def get_mask_ind(seq_len=100,mask_percent=0.15):
-
-    # mask_percent=random.uniform(0.05, 0.5)
-
     Lseq=[i for i in range(seq_len)]
     mask_ind = random.sample(Lseq, round(seq_len * mask_percent))
     mask85 = random.sample(mask_ind, round(len(mask_ind)*0.85))
@@ -64,7 +62,8 @@ def main():
     optim = AdamW(list(model.parameters()) + list(classifier.parameters()), lr=args.lr, weight_decay=0.01)
     # train_data,test_data=load_zero_people(args.test_people)
     train_data=load_all()
-    train_data,valid_data=train_test_split(train_data, test_size=0.1)
+    train_data,valid_data=train_test_split(train_data, test_size=0.1, random_state=113)
+    # train_data,valid_data=load_data(train_prop=0.1)
     train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
     valid_loader = DataLoader(valid_data, batch_size=args.batch_size, shuffle=False)
     loss_smooth = nn.MSELoss(reduction='none')
@@ -122,7 +121,11 @@ def main():
                 rand_word = torch.tensor(csibert.mask(batch_size, min=min_values, max=max_values)).to(device)
             for b in range(batch_size):
                 # get index for masking
-                mask85, cur15 = get_mask_ind(seq_len,args.mask_percent)
+                if args.random_mask_percent:
+                    mask_percent = random.uniform(0.15, 0.7)
+                else:
+                    mask_percent=args.mask_percent
+                mask85, cur15 = get_mask_ind(seq_len,mask_percent)
                 # apply mask, random, remain current token
                 for i in mask85:
                     if x[b][i][0] == pad[0]:
@@ -152,7 +155,10 @@ def main():
                 y_standard=y
 
             # Adversarial
-            alpha=1.0/(1.0+math.exp(2*j))
+            if j>300:
+                alpha=1.0
+            else:
+                alpha=1.0/(1.0+math.exp(2*j))
 
             truth=torch.zeros(batch_size,dtype=torch.long).to(device)
             cls_total=classifier(input,attn_mask,adversarial=True,alpha=alpha)
@@ -270,7 +276,11 @@ def main():
                 rand_word = torch.tensor(csibert.mask(batch_size, min=min_values, max=max_values)).to(device)
             for b in range(batch_size):
                 # get index for masking
-                mask85, cur15 = get_mask_ind(seq_len,args.mask_percent)
+                if args.random_mask_percent:
+                    mask_percent = random.uniform(0.15, 0.8)
+                else:
+                    mask_percent = args.mask_percent
+                mask85, cur15 = get_mask_ind(seq_len, mask_percent)
                 # apply mask, random, remain current token
                 for i in mask85:
                     if x[b][i][0] == pad[0]:
@@ -300,7 +310,10 @@ def main():
                 y_standard=y
 
             # Adversarial
-            alpha = 1.0 / (1.0 + math.exp(2 * j))
+            if j>300:
+                alpha=1.0
+            else:
+                alpha=1.0/(1.0+math.exp(2*j))
 
             truth = torch.zeros(batch_size, dtype=torch.long).to(device)
             cls_total = classifier(input, attn_mask, adversarial=True, alpha=alpha)
