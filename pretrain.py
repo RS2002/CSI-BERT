@@ -35,6 +35,8 @@ def get_args():
     parser.add_argument('--lr', type=float, default=0.0005)
     # parser.add_argument("--test_people", type=int, nargs='+', default=[0,1])
     parser.add_argument('--epoch', type=int, default=30)
+    parser.add_argument('--data_path', type=str, default="./data/magnitude.npy")
+    parser.add_argument('--parameter', type=str, default=None)
     args = parser.parse_args()
     return args
 
@@ -55,13 +57,17 @@ def main():
     csi_dim=args.carrier_dim
     model=Token_Classifier(csibert,args.carrier_dim)
     model=model.to(device)
+
+    if args.parameter is not None:
+        model.load_state_dict(torch.load(args.parameter),strict=False)
+
     classifier=Sequence_Classifier(csibert,2)
     classifier=classifier.to(device)
     total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print('total parameters:', total_params)
     optim = AdamW(list(model.parameters()) + list(classifier.parameters()), lr=args.lr, weight_decay=0.01)
     # train_data,test_data=load_zero_people(args.test_people)
-    train_data=load_all()
+    train_data=load_all(magnitude_path=args.data_path)
     train_data,valid_data=train_test_split(train_data, test_size=0.1, random_state=113)
     # train_data,valid_data=load_data(train_prop=0.1)
     train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
@@ -216,10 +222,17 @@ def main():
             model.zero_grad()
             loss.backward()
             nn.utils.clip_grad_norm_(model.parameters(), 3.0)  # 用于裁剪梯度，防止梯度爆炸
-            # for name, param in model.named_parameters():
-            #     if param.grad is not None:
-            #         current_gradient = torch.max(param.grad)
-            #         print(current_gradient)
+
+            has_nan=False
+            for name, param in model.named_parameters():
+                if param.grad is not None:
+                    if torch.isnan(param.grad).any():
+                        has_nan=True
+                        break
+            if has_nan:
+                print("NAN Grad->Restart")
+                continue
+
             optim.step()
 
             loss_mask=loss_mask.unsqueeze(2)

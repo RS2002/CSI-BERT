@@ -35,6 +35,7 @@ def get_args():
     parser.add_argument('--class_num', type=int, default=6) #action:6, people:8
     parser.add_argument('--task', type=str, default="action") # "action" or "people"
     parser.add_argument("--path", type=str, default='./csibert_pretrain.pth')
+    parser.add_argument('--data_path', type=str, default="./data/magnitude.npy")
     args = parser.parse_args()
     return args
 
@@ -55,7 +56,7 @@ def main():
     optim = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=0.01)
     # dataset=load_all()
     # train_data,test_data=train_test_split(dataset, test_size=0.1, random_state=42)
-    train_data,test_data=load_data(train_prop=0.9)
+    train_data,test_data=load_data(args.data_path, train_prop=0.9)
     train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
     test_loader = DataLoader(test_data, batch_size=args.batch_size, shuffle=False)
     loss_func = nn.CrossEntropyLoss()

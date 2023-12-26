@@ -74,6 +74,7 @@ def load_data(magnitude_path="./data/magnitude.npy",train_prop=None):
                 else:
                     num.append(current_num)
                     current_num=0
+        num.append(current_num)
         current_num=0
         for i in range(len(num)):
             a[current_num:current_num+int(num[i]*train_prop)]=1

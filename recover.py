@@ -26,6 +26,7 @@ def get_args():
     parser.add_argument("--carrier_dim", type=int, default=52)
     parser.add_argument("--carrier_attn", action="store_true",default=False)
     parser.add_argument("--path", type=str, default='./pretrain.pth')
+    parser.add_argument('--data_path', type=str, default="./data/magnitude.npy")
     args = parser.parse_args()
     return args
 
@@ -39,7 +40,7 @@ def main():
     model=Token_Classifier(csibert,csi_dim)
     model.load_state_dict(torch.load(args.path))
     model = model.to(device)
-    data = load_all()
+    data = load_all(magnitude_path=args.data_path)
     data_loader = DataLoader(data, batch_size=args.batch_size, shuffle=False)
     model.eval()
     torch.set_grad_enabled(False)
