@@ -96,4 +96,4 @@ If you encounter the same issue during your testing, we suggest trying the follo
 
 We would greatly appreciate it if you could share your own approach for resolving the bug with us. Your contributions are welcome and valuable to us.
 
-**Most Recently:** Our current approach is to restart the "NAN" epoch so that the "NAN" gradient would not be propagated back to the model.
+**Most Recently:** Our current approach is to skip the "NAN" batch so that the "NAN" gradient would not be propagated back to the model.

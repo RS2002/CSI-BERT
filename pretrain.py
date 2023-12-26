@@ -230,7 +230,7 @@ def main():
                         has_nan=True
                         break
             if has_nan:
-                print("NAN Grad->Restart")
+                # print("NAN Gradient->Skip")
                 continue
 
             optim.step()
