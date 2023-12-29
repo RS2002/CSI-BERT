@@ -3,7 +3,7 @@ data link: https://drive.google.com/file/d/1Y9q9Y7nphcZn8mRc-M_8pm8uM9Bb01wu/vie
 
 
 
-**Article:** CSI-BERT
+**Article:** Enhance Wireless Sensing with CSI-BERT: A BERT-based Approach for CSI Recovery and Sensing
 
 
 
