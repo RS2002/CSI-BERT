@@ -1,9 +1,10 @@
 # CSI-BERT
 data link: https://drive.google.com/file/d/1Y9q9Y7nphcZn8mRc-M_8pm8uM9Bb01wu/view?usp=sharing
 
+**Article:** Finding the Missing Data: A BERT-inspired Approach Against Package Loss in Wireless Sensing (under way)
 
+![](https://github.com/RS2002/CSI-BERT/blob/main/img/CSIBERT.jpg?raw=true)
 
-**Article:** Finding the Missing Data: A BERT-inspired Approach Against Package Loss in Wireless Sensing
 
 
 ## 1.Dataset
