@@ -37,6 +37,8 @@ You can refer to our code to see the parameters that can be easily modified thro
 
 ### 2.1 Pretrain
 
+![](https://github.com/RS2002/CSI-BERT/blob/main/img/Train.jpg?raw=true)
+
 ```bash
 python pretrain.py --normal --time_embedding --adversarial --random_mask_percent
 ```
@@ -63,7 +65,9 @@ python pretrain.py --normal  --time_embedding --adversarial --mask_percent <your
 
 
 
-### 2.2 Recover & Finetune
+### 2.2 Recover
+
+![](https://github.com/RS2002/CSI-BERT/blob/main/img/Recovery.jpg?raw=true)
 
 During the recovery phase, you need to maintain the same settings as in the pretraining phase.
 
