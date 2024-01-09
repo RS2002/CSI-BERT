@@ -35,17 +35,21 @@ def get_args():
     parser.add_argument('--class_num', type=int, default=6) #action:6, people:8
     parser.add_argument('--task', type=str, default="action") # "action" or "people"
     parser.add_argument("--path", type=str, default='./csibert_pretrain.pth')
+    parser.add_argument("--no_pretrain", action="store_true",default=False)
     parser.add_argument('--data_path', type=str, default="./data/magnitude.npy")
     args = parser.parse_args()
     return args
 
 def main():
+    ACC=[]
+
     args=get_args()
     device_name = "cuda:"+args.cuda
     device = torch.device(device_name if torch.cuda.is_available() and not args.cpu else 'cpu')
     bertconfig=BertConfig(max_position_embeddings=args.max_len, hidden_size=args.hs, position_embedding_type=args.position_embedding_type,num_hidden_layers=args.layers,num_attention_heads=args.heads, intermediate_size=args.intermediate_size)
     csibert=CSIBERT(bertconfig,args.carrier_dim,args.carrier_attn, args.time_embedding)
-    csibert.load_state_dict(torch.load(args.path))
+    if not args.no_pretrain:
+        csibert.load_state_dict(torch.load(args.path))
     # model=Sequence_Classifier(csibert,args.class_num)
     model = Classification(csibert, args.class_num)
     model=model.to(device)
@@ -92,15 +96,16 @@ def main():
             min_values, _ = torch.min(input, dim=-2, keepdim=True)
             input[input == -pad[0]] = pad[0]
 
+            non_pad = (input != pad[0]).float()
+            avg = copy.deepcopy(input)
+            avg[input == pad[0]] = 0
+            avg = torch.sum(avg, dim=-2, keepdim=True) / (torch.sum(non_pad, dim=-2, keepdim=True)+1e-8)
+            std = (input - avg) ** 2
+            std[input == pad[0]] = 0
+            std = torch.sum(std, dim=-2, keepdim=True) / (torch.sum(non_pad, dim=-2, keepdim=True)+1e-8)
+            std = torch.sqrt(std)
+
             if args.normal:
-                non_pad = (input != pad[0]).float()
-                avg = copy.deepcopy(input)
-                avg[input == pad[0]] = 0
-                avg = torch.sum(avg, dim=-2, keepdim=True) / torch.sum(non_pad, dim=-2, keepdim=True)
-                std = (input - avg) ** 2
-                std[input == pad[0]] = 0
-                std = torch.sum(std, dim=-2, keepdim=True) / torch.sum(non_pad, dim=-2, keepdim=True)
-                std = torch.sqrt(std)
                 input = (input - avg) / (std+1e-5)
 
             batch_size,seq_len,carrier_num=input.shape
@@ -108,7 +113,7 @@ def main():
             if args.normal:
                 rand_word = torch.tensor(csibert.mask(batch_size, std=torch.tensor([1]).to(device), avg=torch.tensor([0]).to(device))).to(device)
             else:
-                rand_word = torch.tensor(csibert.mask(batch_size, min=min_values, max=max_values)).to(device)
+                rand_word = torch.tensor(csibert.mask(batch_size, std=std.to(device), avg=avg.to(device))).to(device)
             input[x==pad[0]]=rand_word[x==pad[0]]
             if args.time_embedding:
                 y = model(input, attn_mask)
@@ -152,15 +157,16 @@ def main():
             min_values, _ = torch.min(input, dim=-2, keepdim=True)
             input[input == -pad[0]] = pad[0]
 
+            non_pad = (input != pad[0]).float()
+            avg = copy.deepcopy(input)
+            avg[input == pad[0]] = 0
+            avg = torch.sum(avg, dim=-2, keepdim=True) / (torch.sum(non_pad, dim=-2, keepdim=True)+1e-8)
+            std = (input - avg) ** 2
+            std[input == pad[0]] = 0
+            std = torch.sum(std, dim=-2, keepdim=True) / (torch.sum(non_pad, dim=-2, keepdim=True)+1e-8)
+            std = torch.sqrt(std)
+
             if args.normal:
-                non_pad = (input != pad[0]).float()
-                avg = copy.deepcopy(input)
-                avg[input == pad[0]] = 0
-                avg = torch.sum(avg, dim=-2, keepdim=True) / torch.sum(non_pad, dim=-2, keepdim=True)
-                std = (input - avg) ** 2
-                std[input == pad[0]] = 0
-                std = torch.sum(std, dim=-2, keepdim=True) / torch.sum(non_pad, dim=-2, keepdim=True)
-                std = torch.sqrt(std)
                 input = (input - avg) / (std+1e-5)
 
             batch_size,seq_len,carrier_num=input.shape
@@ -168,7 +174,7 @@ def main():
             if args.normal:
                 rand_word = torch.tensor(csibert.mask(batch_size, std=torch.tensor([1]).to(device), avg=torch.tensor([0]).to(device))).to(device)
             else:
-                rand_word = torch.tensor(csibert.mask(batch_size, min=min_values, max=max_values)).to(device)
+                rand_word = torch.tensor(csibert.mask(batch_size, std=std.to(device), avg=avg.to(device))).to(device)
             input[x==pad[0]]=rand_word[x==pad[0]]
             if args.time_embedding:
                 y = model(input, attn_mask)
@@ -183,6 +189,7 @@ def main():
             acc_list.append(acc.item())
         log="Test Loss {:06f}, Test Acc {:06f}".format(np.mean(loss_list),np.mean(acc_list))
         print(log)
+        ACC.append(np.mean(acc_list))
         with open(args.task+".txt", 'a') as file:
             file.write(log+"\n")
         if np.mean(acc_list)>=best_acc:
@@ -193,6 +200,11 @@ def main():
             best_epoch+=1
         if best_epoch>=args.epoch:
             break
+
+    print("Acc Max:",np.max(ACC))
+    print("Acc Mean:",np.max(ACC[-30:]))
+    print("Acc Std:",np.max(ACC[-30:]))
+
 
 if __name__ == '__main__':
     main()

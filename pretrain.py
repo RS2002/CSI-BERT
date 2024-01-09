@@ -124,7 +124,7 @@ def main():
             if args.normal:
                 rand_word = torch.tensor(csibert.mask(batch_size, std=torch.tensor([1]).to(device), avg=torch.tensor([0]).to(device))).to(device)
             else:
-                rand_word = torch.tensor(csibert.mask(batch_size, min=min_values, max=max_values)).to(device)
+                rand_word = torch.tensor(csibert.mask(batch_size, std=std.to(device), avg=avg.to(device))).to(device)
             for b in range(batch_size):
                 # get index for masking
                 if args.random_mask_percent:
@@ -148,8 +148,10 @@ def main():
             attn_mask = (x[:, :, 0] != pad[0]).float().to(device)  # (batch, seq_len)
             if args.time_embedding:
                 y = model(input, attn_mask)
+                # y = model(input, None)
             else:
                 y = model(input, attn_mask, timestamp)
+                # y = model(input, None, timestamp)
 
             if args.normal:
                 y = y * std + avg
@@ -161,10 +163,12 @@ def main():
                 y_standard=y
 
             # Adversarial
-            if j>300:
+            num=300
+            if j>num:
                 alpha=1.0
             else:
-                alpha=1.0/(1.0+math.exp(2*j))
+                alpha=2.0/(1.0+math.exp(-10*j/num))-1
+
 
             truth=torch.zeros(batch_size,dtype=torch.long).to(device)
             cls_total=classifier(input,attn_mask,adversarial=True,alpha=alpha)
@@ -286,7 +290,7 @@ def main():
             if args.normal:
                 rand_word = torch.tensor(csibert.mask(batch_size, std=torch.tensor([1]).to(device), avg=torch.tensor([0]).to(device))).to(device)
             else:
-                rand_word = torch.tensor(csibert.mask(batch_size, min=min_values, max=max_values)).to(device)
+                rand_word = torch.tensor(csibert.mask(batch_size, std=std.to(device), avg=avg.to(device))).to(device)
             for b in range(batch_size):
                 # get index for masking
                 if args.random_mask_percent:
@@ -310,8 +314,10 @@ def main():
             attn_mask = (x[:, :, 0] != pad[0]).float().to(device)  # (batch, seq_len)
             if args.time_embedding:
                 y = model(input, attn_mask)
+                # y = model(input, None)
             else:
                 y = model(input, attn_mask, timestamp)
+                # y = model(input, None, timestamp)
 
             if args.normal:
                 y = y * std + avg
@@ -323,10 +329,10 @@ def main():
                 y_standard=y
 
             # Adversarial
-            if j>300:
+            if j>num:
                 alpha=1.0
             else:
-                alpha=1.0/(1.0+math.exp(2*j))
+                alpha=2.0/(1.0+math.exp(-10*j/num))-1
 
             truth = torch.zeros(batch_size, dtype=torch.long).to(device)
             cls_total = classifier(input, attn_mask, adversarial=True, alpha=alpha)
