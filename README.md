@@ -10,7 +10,7 @@
 
 ### 1.1 Dataset
 
-to be published
+Dynamic part of WiGesture Dataset (to be published)
 
 
 
