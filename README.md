@@ -2,7 +2,7 @@
 
 **Article:** Finding the Missing Data: A BERT-inspired Approach Against Package Loss in Wireless Sensing (under review)
 
-![](https://github.com/RS2002/CSI-BERT/blob/main/img/CSIBERT.jpg?raw=true)
+![](./img/CSIBERT.jpg)
 
 
 
@@ -10,7 +10,11 @@
 
 ### 1.1 Dataset
 
-Dynamic part of WiGesture Dataset (to be published)
+Dynamic part of WiGesture Dataset
+
+Official Website: to be published
+
+<img src="./img/WiGesture.png" style="zoom:50%;" />
 
 
 
@@ -36,7 +40,7 @@ You can refer to our code to see the parameters that can be easily modified thro
 
 ### 2.1 Pretrain
 
-![](https://github.com/RS2002/CSI-BERT/blob/main/img/Train.jpg?raw=true)
+![](./img/Train.jpg)
 
 ```bash
 python pretrain.py --normal --time_embedding --adversarial --random_mask_percent
@@ -66,7 +70,7 @@ python pretrain.py --normal  --time_embedding --adversarial --mask_percent <your
 
 ### 2.2 Recover
 
-![](https://github.com/RS2002/CSI-BERT/blob/main/img/Recovery.jpg?raw=true)
+![](./img/Recovery.jpg)
 
 During the recovery phase, you need to maintain the same settings as in the pretraining phase.
 
@@ -99,4 +103,4 @@ If you encounter the same issue during your testing, we suggest trying the follo
 
 We would greatly appreciate it if you could share your own approach for resolving the bug with us. Your contributions are welcome and valuable to us.
 
-**Most Recently:** Our current approach is to skip the "NAN" batch so that the "NAN" gradient would not be propagated back to the model.
+**Most Recently: Our current approach is to skip the "NAN" batch so that the "NAN" gradient would not be propagated back to the model. **
