@@ -1,6 +1,6 @@
 # CSI-BERT
 
-**Article:** Finding the Missing Data: A BERT-inspired Approach Against Package Loss in Wireless Sensing (under review)
+**Article:** Zijian Zhao, Tingwei Chen, Fanyi Meng, Hang Li, XiaoYang Li, Guangxu Zhu*, "Finding the Missing Data: A BERT-inspired Approach Against Package Loss in Wireless Sensing", IEEE INFOCOM DeepWireless Workshop 2024 (Accepted on Febaruary 6th 2024)
 
 ![](./img/CSIBERT.jpg)
 
