@@ -1,8 +1,6 @@
 # CSI-BERT
 
-**Article:** Zijian Zhao, Tingwei Chen, Fanyi Meng, Hang Li, XiaoYang Li, Guangxu Zhu*, "Finding the Missing Data: A BERT-inspired Approach Against Package Loss in Wireless Sensing", IEEE INFOCOM DeepWireless Workshop 2024 (Accepted on Febaruary 6th 2024)
-
-![](./img/CSIBERT.jpg)
+**Article:** Zijian Zhao, Tingwei Chen, Fanyi Meng, Hang Li, XiaoYang Li, Guangxu Zhu*, "Finding the Missing Data: A BERT-inspired Approach Against Package Loss in Wireless Sensing", IEEE INFOCOM DeepWireless Workshop 2024![](./img/CSIBERT.jpg)
 
 
 
@@ -19,6 +17,12 @@ Official Website: to be published
 
 
 ### 1.2 Data Preparation
+
+
+
+**We will upload our code for data processing soon.**
+
+
 
 The data structure is as follows:
 
@@ -103,4 +107,4 @@ If you encounter the same issue during your testing, we suggest trying the follo
 
 We would greatly appreciate it if you could share your own approach for resolving the bug with us. Your contributions are welcome and valuable to us.
 
-** Most Recently: Our current approach is to skip the "NAN" batch so that the "NAN" gradient would not be propagated back to the model. **
+**Most Recently: Our current approach is to skip the "NAN" batch so that the "NAN" gradient would not be propagated back to the model.**
