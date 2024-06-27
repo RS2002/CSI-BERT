@@ -10,19 +10,13 @@
 
 Dynamic part of WiGesture Dataset
 
-Official Website: to be published
-
 <img src="./img/WiGesture.png" style="zoom:50%;" />
 
 
 
 ### 1.2 Data Preparation
 
-
-
-**We will upload our code for data processing soon.**
-
-
+**We provide a data process example in ./WiGesture/data_process_example**.
 
 The data structure is as follows:
 
