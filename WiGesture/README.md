@@ -41,7 +41,7 @@ Data collection is performed in an indoor scenario, where the black icons indica
 
 
 
-##4. File Tree Structure
+## 4. File Tree Structure
 
 The filename represents the gesture of the sample, while its parent root indicates the person's ID.
 
