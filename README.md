@@ -8,7 +8,11 @@
 
 ### 1.1 Dataset
 
-Dynamic part of WiGesture Dataset
+Dynamic part of WiGesture Dataset （./WiGesture）
+
+ [WiGesture Dataset | Papers With Code](https://paperswithcode.com/dataset/wigesture) 
+
+
 
 <img src="./img/WiGesture.png" style="zoom:50%;" />
 
