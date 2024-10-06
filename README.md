@@ -114,11 +114,15 @@ We would greatly appreciate it if you could share your own approach for resolvin
 ## 4 Citation
 
 ```
-@article{zhao2024finding,
-  title={Finding the Missing Data: A BERT-inspired Approach Against Package Loss in Wireless Sensing},
+@INPROCEEDINGS{10620769,
   author={Zhao, Zijian and Chen, Tingwei and Meng, Fanyi and Li, Hang and Li, Xiaoyang and Zhu, Guangxu},
-  journal={arXiv preprint arXiv:2403.12400},
-  year={2024}
-}
+  booktitle={IEEE INFOCOM 2024 - IEEE Conference on Computer Communications Workshops (INFOCOM WKSHPS)}, 
+  title={Finding the Missing Data: A BERT-Inspired Approach Against Package Loss in Wireless Sensing}, 
+  year={2024},
+  volume={},
+  number={},
+  pages={1-6},
+  keywords={Deep learning;Wireless communication;Interpolation;Wireless sensor networks;Transformers;Data models;Sensors;Bidirectional Encoder Representations from Transformers;Adversarial Learning;Data Recovery;Channel Statement Information;Wi-Fi Sensing},
+  doi={10.1109/INFOCOMWKSHPS61880.2024.10620769}}
 ```
 
