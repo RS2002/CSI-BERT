@@ -2,7 +2,7 @@
 
 A new version of CSI-BERT will be published at [CSI-BERT2](https://github.com/RS2002/CSI-BERT2), where we have optimized the model and code structure. The CSI-BERT2 can be used for a wider range of tasks.
 
-**Article:** Zijian Zhao, Tingwei Chen, Fanyi Meng, Hang Li, XiaoYang Li, Guangxu Zhu*, "[Finding the Missing Data: A BERT-inspired Approach Against Package Loss in Wireless Sensing](https://arxiv.org/abs/2403.12400)", IEEE INFOCOM DeepWireless Workshop 2024![](./img/CSIBERT.jpg)
+**Article:** Zijian Zhao, Tingwei Chen, Fanyi Meng, Hang Li, XiaoYang Li, Guangxu Zhu*, "[Finding the Missing Data: A BERT-inspired Approach Against Package Loss in Wireless Sensing](https://ieeexplore.ieee.org/document/10620769)", IEEE INFOCOM DeepWireless Workshop 2024![](./img/CSIBERT.jpg)
 
 
 
