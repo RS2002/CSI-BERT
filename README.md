@@ -2,7 +2,7 @@
 
 **Article:** Zijian Zhao, Tingwei Chen, Fanyi Meng, Hang Li, XiaoYang Li, Guangxu Zhu*, "[Finding the Missing Data: A BERT-inspired Approach Against Package Loss in Wireless Sensing](https://ieeexplore.ieee.org/document/10620769)", IEEE INFOCOM DeepWireless Workshop 2024
 
-**Notice:** A new version of CSI-BERT will be published at [CSI-BERT2](https://github.com/RS2002/CSI-BERT2), where we have optimized the model and code structure. The CSI-BERT2 can be used for a wider range of tasks. Additionally, we have uploaded our model and pre-trained parameters to Hugging Face. ([RS2002/CSI-BERT · Hugging Face](https://huggingface.co/RS2002/CSI-BERT), [RS2002/CSI-BERT2 · Hugging Face](https://huggingface.co/RS2002/CSI-BERT2)).
+**Notice:** A new version of CSI-BERT will be published at [CSI-BERT2](https://github.com/RS2002/CSI-BERT2), where we have optimized the model and code structure. The CSI-BERT2 can be used for a wider range of tasks. Additionally, we have uploaded our model, pre-trained parameters ([RS2002/CSI-BERT · Hugging Face](https://huggingface.co/RS2002/CSI-BERT), [RS2002/CSI-BERT2 · Hugging Face](https://huggingface.co/RS2002/CSI-BERT2)), and dataset ([RS2002/WiGesture · Datasets at Hugging Face](https://huggingface.co/datasets/RS2002/WiGesture)) to Hugging Face.
 
 ![](./img/CSIBERT.jpg)
 
