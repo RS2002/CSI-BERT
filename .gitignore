@@ -1,0 +1,7 @@
+.env
+*.csv
+*.npy
+*.pth
+*.pkl
+*.pyc
+*.txt
